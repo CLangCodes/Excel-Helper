@@ -219,7 +219,7 @@ public class ExcelHandler
 
     // Given a document name and text, 
     // inserts a new work sheet and writes the text to cell "A1" of the new worksheet.
-    public static void InsertText(SpreadsheetDocument document, string text, string cellReference)
+    public static void InsertText(SpreadsheetDocument document, string sheetName, string text, string cellReference)
     {
         WorkbookPart workbookPart = document.WorkbookPart ?? document.AddWorkbookPart();
 
@@ -237,11 +237,13 @@ public class ExcelHandler
         // Insert the text into the SharedStringTablePart.
         int index = InsertSharedStringItem(text, shareStringPart);
 
-        // Insert a new worksheet.
-        WorksheetPart worksheetPart = InsertWorksheet(workbookPart);
+        // Get or Insert a worksheet.
+
+        WorksheetPart worksheetPart = GetWorksheetPartByName(workbookPart, sheetName) ?? InsertWorksheet(workbookPart);
+        
         var col = GetColName(cellReference) ?? string.Empty;
         var row = GetRowIndex(cellReference);
-        // Insert cell A1 into the new worksheet.
+
         Cell cell = InsertCellInWorksheet(col, (uint)row!, worksheetPart);
 
         // Set the value of cell A1.
